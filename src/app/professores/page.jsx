@@ -10,19 +10,17 @@ export default function ListarProdutos() {
   const [data, setData] = useState([{}]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // estados para carregar os valores do botão atualiza
-  // armazenam somente o dado de 1 produto buscado pela funcao atualizarProdBtnEditar()
-  const [idProd, setIdProd] = useState("");
-  const [nomeProd, setNomeProd] = useState("");
-  const [prodQuantidade, setProdQuantidade] = useState("");
-  const [proPreco, setProdPreco] = useState("");
+  
+  const [nome, setNome] = useState("");
+  const [areaAtuacao, setAreaAtuacao] = useState("");
+  const [telefone, setTelefone] = useState("");
 
   // estados para alertas
   const [mostrarAlertaSucesso, setMostrarAlertaSucesso] = useState(false);
 
   const fetchData = async () => {
     try {
-      const resposta = await axiosInstance.get("/produtos");
+      const resposta = await axiosInstance.get("/professor/listar");
       setData(resposta.data);
     } catch (error) {
       if (error.response) {
@@ -38,20 +36,20 @@ export default function ListarProdutos() {
     }
   };
 
-  const atualizarProdBtnEditar = (id) => {
-    if (id) {
-      data.map((prod) => {
-        if (prod.id == id) {
-          setIdProd(prod.id);
-          setNomeProd(prod.nome);
-          setProdQuantidade(prod.quantidade);
-          setProdPreco(prod.preco);
-        } else {
-          return console.log("erro ao buscar por id");
-        }
-      });
-    }
-  };
+  // const atualizarProdBtnEditar = (id) => {
+  //   if (id) {
+  //     data.map((prod) => {
+  //       if (prod.id == id) {
+  //         setIdProd(prod.id);
+  //         setNomeProd(prod.nome);
+  //         setProdQuantidade(prod.quantidade);
+  //         setProdPreco(prod.preco);
+  //       } else {
+  //         return console.log("erro ao buscar por id");
+  //       }
+  //     });
+  //   }
+  // };
 
   useEffect(() => {
     fetchData();
@@ -147,12 +145,12 @@ export default function ListarProdutos() {
             </thead>
             <tbody>
               {/* row  */}
-              {data.map((produto, index) => (
+              {data.map((professor, index) => (
                 <tr key={index}>
-                  <th>{produto.id}</th>
-                  <td>{produto.nome}</td>
-                  <td>{produto.quantidade}</td>
-                  <td>{produto.preco}</td>
+                  <th>{professor.idprofessor}</th>
+                  <td>{professor.nome}</td>
+                  <td>{professor.areaAtuacao}</td>
+                  <td>{professor.telefone}</td>
                   <td>
                     <div className="flex items-center justify-center gap-5 my-2">
                       {/* MOLDAL EDITAR INICIO--------------------------- */}
@@ -168,99 +166,7 @@ export default function ListarProdutos() {
                       >
                         Editar
                       </button>
-                      <dialog id="my_modal_2" className="modal">
-                        <div className="modal-box">
-                          <h3 className="font-bold text-lg">
-                            Edite o campo desejado
-                          </h3>
 
-                          {mostrarAlertaSucesso && (
-                            <AlertSucesso mensagem="Atualizado com sucesso" />
-                          )}
-
-                          <div className="overflow-x-auto">
-                            <table className="table flex justify-center items-center">
-                              {/* head */}
-                              <thead>
-                                <tr>
-                                  <th>id</th>
-                                  <th>Nome</th>
-                                  <th>Quantidade</th>
-                                  <th>Preço</th>
-                                </tr>
-                              </thead>
-                              <tbody className="w-full">
-                                {/* row 1 */}
-                                <tr className="w-full justify-between">
-                                  <th className=" ">
-                                    <input
-                                      type="text"
-                                      placeholder=""
-                                      value={idProd}
-                                      onChange={(e) =>
-                                        setIdProd(e.target.value)
-                                      }
-                                      disabled={true}
-                                      className="input input-bordered input-primary w-full max-w-xs"
-                                    />
-                                  </th>
-                                  <td className=" ">
-                                    <input
-                                      type="text"
-                                      placeholder=""
-                                      value={nomeProd}
-                                      onChange={(e) =>
-                                        setNomeProd(e.target.value)
-                                      }
-                                      className="input input-bordered input-primary !w-full max-w-xs"
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      placeholder=""
-                                      value={prodQuantidade}
-                                      onChange={(e) =>
-                                        setProdQuantidade(e.target.value)
-                                      }
-                                      className="input input-bordered input-primary w-full max-w-xs"
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      placeholder=""
-                                      value={proPreco}
-                                      onChange={(e) =>
-                                        setProdPreco(e.target.value)
-                                      }
-                                      className="input input-bordered input-primary w-full max-w-xs"
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            <div className="flex w-52 my-5 m-auto">
-                              <button
-                                onClick={() => {
-                                  atualizarProduto(
-                                    idProd,
-                                    nomeProd,
-                                    prodQuantidade,
-                                    proPreco
-                                  );
-                                }}
-                                className="btn m-auto btn-info w-full"
-                              >
-                                atualizar
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        <form method="dialog" className="modal-backdrop">
-                          <button></button>
-                        </form>
-                      </dialog>
                       {/* MOLDAL EDITAR FIM--------------------------- */}
                       <button
                         onClick={() => removerProduto(produto.id)}

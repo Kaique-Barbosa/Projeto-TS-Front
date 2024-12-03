@@ -12,17 +12,17 @@ export default function ListarProdutos() {
 
   // estados para carregar os valores do botão atualiza
   // armazenam somente o dado de 1 produto buscado pela funcao atualizarProdBtnEditar()
-  const [idProd, setIdProd] = useState("");
-  const [nomeProd, setNomeProd] = useState("");
-  const [prodQuantidade, setProdQuantidade] = useState("");
-  const [proPreco, setProdPreco] = useState("");
+  
+  const [nome, setNome] = useState("");
+  const [periodo, setPeriodo] = useState("");
+  const [fprofessor, setProfessor] = useState("");
 
   // estados para alertas
   const [mostrarAlertaSucesso, setMostrarAlertaSucesso] = useState(false);
 
   const fetchData = async () => {
     try {
-      const resposta = await axiosInstance.get("/produtos");
+      const resposta = await axiosInstance.get("/turma/listar");
       setData(resposta.data);
     } catch (error) {
       if (error.response) {
@@ -147,12 +147,12 @@ export default function ListarProdutos() {
             </thead>
             <tbody>
               {/* row  */}
-              {data.map((produto, index) => (
+              {data.map((turma, index) => (
                 <tr key={index}>
-                  <th>{produto.id}</th>
-                  <td>{produto.nome}</td>
-                  <td>{produto.quantidade}</td>
-                  <td>{produto.preco}</td>
+                  <th>{turma.codTurma}</th>
+                  <td>{turma.nome}</td>
+                  <td>{turma.periodo}</td>
+                  <td>{turma.professor.nome}</td>
                   <td>
                     <div className="flex items-center justify-center gap-5 my-2">
                       {/* MOLDAL EDITAR INICIO--------------------------- */}
@@ -168,99 +168,7 @@ export default function ListarProdutos() {
                       >
                         Editar
                       </button>
-                      <dialog id="my_modal_2" className="modal">
-                        <div className="modal-box">
-                          <h3 className="font-bold text-lg">
-                            Edite o campo desejado
-                          </h3>
 
-                          {mostrarAlertaSucesso && (
-                            <AlertSucesso mensagem="Atualizado com sucesso" />
-                          )}
-
-                          <div className="overflow-x-auto">
-                            <table className="table flex justify-center items-center">
-                              {/* head */}
-                              <thead>
-                                <tr>
-                                  <th>id</th>
-                                  <th>Nome</th>
-                                  <th>Quantidade</th>
-                                  <th>Preço</th>
-                                </tr>
-                              </thead>
-                              <tbody className="w-full">
-                                {/* row 1 */}
-                                <tr className="w-full justify-between">
-                                  <th className=" ">
-                                    <input
-                                      type="text"
-                                      placeholder=""
-                                      value={idProd}
-                                      onChange={(e) =>
-                                        setIdProd(e.target.value)
-                                      }
-                                      disabled={true}
-                                      className="input input-bordered input-primary w-full max-w-xs"
-                                    />
-                                  </th>
-                                  <td className=" ">
-                                    <input
-                                      type="text"
-                                      placeholder=""
-                                      value={nomeProd}
-                                      onChange={(e) =>
-                                        setNomeProd(e.target.value)
-                                      }
-                                      className="input input-bordered input-primary !w-full max-w-xs"
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      placeholder=""
-                                      value={prodQuantidade}
-                                      onChange={(e) =>
-                                        setProdQuantidade(e.target.value)
-                                      }
-                                      className="input input-bordered input-primary w-full max-w-xs"
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      placeholder=""
-                                      value={proPreco}
-                                      onChange={(e) =>
-                                        setProdPreco(e.target.value)
-                                      }
-                                      className="input input-bordered input-primary w-full max-w-xs"
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            <div className="flex w-52 my-5 m-auto">
-                              <button
-                                onClick={() => {
-                                  atualizarProduto(
-                                    idProd,
-                                    nomeProd,
-                                    prodQuantidade,
-                                    proPreco
-                                  );
-                                }}
-                                className="btn m-auto btn-info w-full"
-                              >
-                                atualizar
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        <form method="dialog" className="modal-backdrop">
-                          <button></button>
-                        </form>
-                      </dialog>
                       {/* MOLDAL EDITAR FIM--------------------------- */}
                       <button
                         onClick={() => removerProduto(produto.id)}
