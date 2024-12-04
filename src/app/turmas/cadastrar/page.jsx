@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
 import { useState } from "react";
 
-export default function CadastrarTurmas() {
-  const [nome, setNome] = useState("");
-  const [periodo, setPeriodo] = useState("");
+export default function CadastrarTurma() {
+  const [nomeTurma, setNomeTurma] = useState("");
+  const [periodoTurma, setPeriodoTurma] = useState("");
   const [profResponsavel, setProfResponsavel] = useState("");
   const router = useRouter();
   
@@ -15,13 +15,13 @@ export default function CadastrarTurmas() {
     const { name, value } = e.target;
 
     switch (name) {
-      case "nome":
-        setNome(value);
+      case "nome-turma":
+        setNomeTurma(value);
         break;
-      case "periodo":
-        setPeriodo(value);
+      case "periodo-turma":
+        setPeriodoTurma(value);
         break;
-      case "profResponsavel":
+      case "prof-responsavel":
         setProfResponsavel(value);
         break;
       default:
@@ -32,20 +32,20 @@ export default function CadastrarTurmas() {
   const cadastrarTurma = async (event) => {
     event.preventDefault();
     try {
-      if (nome && periodo && profResponsavel) {
-        const data = { nome, periodo, profResponsavel };
+      if (nomeTurma && periodoTurma && profResponsavel) {
+        const data = { nome: nomeTurma, periodo: periodoTurma, professor: parseInt(profResponsavel)};
+        
         const resposta = await axiosInstance.post("/turma/cadastrar", data);
         console.log("Turma cadastrada com sucesso", resposta.status);
-        setNome("");
-        setPeriodo("");
+        setNomeTurma("");
+        setPeriodoTurma("");
         setProfResponsavel("");
-        setTimeout(()=> router.push('/turmas'), 2000)
+        setTimeout(() => router.push("/turmas"), 2000);
       }
     } catch (error) {
       console.log("Erro ao cadastrar turma", error);
     }
   };
-
 
   return (
     <div className="flex w-full items-center justify-center justify-items-center min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -59,33 +59,33 @@ export default function CadastrarTurmas() {
           className="flex flex-col justify-center gap-4 w-[25rem] shadow-lg shadow-indigo-500/50 p-6 rounded-lg"
         >
           <div className="flex-1">
-            <label className="block my-1">Nome</label>
+            <label className="block my-1">Nome da Turma</label>
             <input
               type="text"
-              placeholder="Nome"
-              name="nome"
-              value={nome || ""}
+              placeholder="Nome da Turma"
+              name="nome-turma"
               onChange={handleInputs}
-              className="input input-bordered input-primary w-full"
+              value={nomeTurma || ""}
+              className="input input-bordered input-primary text-black w-full"
             />
           </div>
           <div className="flex-1">
-            <label className="block my-1">Periodo</label>
+            <label className="block my-1">Período</label>
             <input
-              type="date"
-              placeholder="Data de Nascimento"
-              name="periodo"
+              type="text"
+              placeholder="Período"
+              name="periodo-turma"
               onChange={handleInputs}
-              value={periodo || ""}
-              className="input input-bordered input-primary text-gray-600 w-full"
+              value={periodoTurma || ""}
+              className="input input-bordered input-primary text-black w-full"
             />
           </div>
           <div className="flex-1">
-            <label className="block my-1">Prof Responsavel</label>
+            <label className="block my-1">Professor Responsável</label>
             <input
               type="text"
-              placeholder="Turma"
-              name="profResponsavel"
+              placeholder="ID do professor Responsável"
+              name="prof-responsavel"
               onChange={handleInputs}
               value={profResponsavel || ""}
               className="input input-bordered input-primary w-full"

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
 import { useState } from "react";
 
-export default function CadastrarAluno() {
+export default function CadastrarProfessor() {
   const [nome, setNome] = useState("");
   const [areaAtuacao, setAreaAtuacao] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -29,23 +29,22 @@ export default function CadastrarAluno() {
     }
   };
 
-  const cadastrarAluno = async (event) => {
+  const cadastrarProfessor = async (event) => {
     event.preventDefault();
     try {
-      if (nome && dataNascimento && turma) {
-        const data = { nome, dataNascimento, turma };
-        const resposta = await axiosInstance.post("/aluno/cadastrarprodutos", data);
-        console.log("Produto cadastrado com sucesso", resposta.status);
-        setNome("");
-        setDataNascimento("");
-        setTurma("");
+      if (nome && areaAtuacao && telefone) {
+        
+        const data = { nome, areaAtuacao, telefone }; 
+
+        // Enviando a requisição para o backend
+        const resposta = await axiosInstance.post(`/professor/cadastrar`, data);
+        console.log("Professor cadastrado com sucesso", resposta.status);
+        router.push("/professores"); // Redireciona para a lista de professores após o cadastro
       }
-      setTimeout(()=> router.push('/alunos'), 2000)
     } catch (error) {
-      console.log("Erro ao cadastrar produto", error);
+      console.error("Erro ao cadastrar professor", error);
     }
   };
-
 
   return (
     <div className="flex w-full items-center justify-center justify-items-center min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -55,7 +54,7 @@ export default function CadastrarAluno() {
         </div>
 
         <form
-          onSubmit={cadastrarAluno}
+          onSubmit={cadastrarProfessor}
           className="flex flex-col justify-center gap-4 w-[25rem] shadow-lg shadow-indigo-500/50 p-6 rounded-lg"
         >
           <div className="flex-1">
@@ -66,29 +65,29 @@ export default function CadastrarAluno() {
               name="nome"
               value={nome || ""}
               onChange={handleInputs}
-              className="input input-bordered input-primary w-full"
+              className="input input-bordered input-primary w-full !text-black dark:text-white"
             />
           </div>
           <div className="flex-1">
             <label className="block my-1">Area de atuação</label>
             <input
               type="text"
-              placeholder="Digite sua área"
+              placeholder=""
               name="area-atuacao"
               onChange={handleInputs}
               value={areaAtuacao || ""}
-              className="input input-bordered input-primary text-gray-600 w-full"
+              className="input input-bordered input-primary !text-gray-600 w-full dark:text-gray-400"
             />
           </div>
           <div className="flex-1">
             <label className="block my-1">Telefone</label>
             <input
               type="number"
-              placeholder="Telefone"
+              placeholder="Digite seu numero"
               name="telefone"
               onChange={handleInputs}
               value={telefone || ""}
-              className="input input-bordered input-primary w-full"
+              className="input input-bordered input-primary w-full  !text-black dark:text-white"
             />
           </div>
           <button
@@ -99,7 +98,7 @@ export default function CadastrarAluno() {
           </button>
           <div className="flex justify-around">
             <Link href={"/professores"} className="hover:underline">
-              Lista de professores
+              Lista de Professores
             </Link>
             <Link href={"/"} className="hover:underline">
               Voltar ao Home

@@ -38,31 +38,17 @@ export default function ListarProdutos() {
     }
   };
 
-  const atualizarProdBtnEditar = (id) => {
-    if (id) {
-      data.map((prod) => {
-        if (prod.id == id) {
-          setIdProd(prod.id);
-          setNomeProd(prod.nome);
-          setProdQuantidade(prod.quantidade);
-          setProdPreco(prod.preco);
-        } else {
-          return console.log("erro ao buscar por id");
-        }
-      });
-    }
-  };
+
 
   useEffect(() => {
     fetchData();
     setTimeout(() => setIsLoading(false), 500);
   }, []);
 
-  const removerProduto = async (id) => {
-    console.log("teste");
+  const removerTurma = async (id) => {
     try {
-      const resposta = await axiosInstance.delete(`/produtos/${id}`);
-      console.log("produto deletado com sucesso", resposta);
+      const resposta = await axiosInstance.delete(`/turma/deletar/${id}`);
+      alert("Turma deletada com sucesso", resposta);
       fetchData();
       setTimeout(() => setIsLoading(false), 500);
     } catch (error) {
@@ -79,36 +65,6 @@ export default function ListarProdutos() {
     }
   };
 
-  const atualizarProduto = async (id, nome, quantidade, preco) => {
-    try {
-      const data = {
-        nome,
-        quantidade: parseInt(quantidade, 10),
-        preco: parseFloat(preco), //
-      };
-      if (isNaN(data.quantidade) || isNaN(data.preco)) {
-        console.error("Quantidade ou preço não são valores numéricos válidos.");
-        return;
-      }
-
-      const resposta = await axiosInstance.put(`/produtos/${id}`, data);
-
-      // Mostrar o alerta de sucesso
-      setMostrarAlertaSucesso(true);
-      setTimeout(() => setMostrarAlertaSucesso(false), 3000); // Esconder o alerta após 3 segundos
-
-      fetchData();
-      setTimeout(() => setIsLoading(false), 500);
-    } catch (error) {
-      if (error.response) {
-        console.error("Erro de resposta:", error.response.status);
-      } else if (error.request) {
-        console.error("Erro de requisição:", error.request);
-      } else {
-        console.error("Erro ao configurar requisição:", error.message);
-      }
-    }
-  };
 
   if (isLoading) {
     return (
@@ -121,7 +77,7 @@ export default function ListarProdutos() {
   }
 
   return (
-    <div className="flex w-full md:w-[80%] m-auto items-center justify-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex w-full max-w-screen-xl m-auto items-center justify-center justify-items-center min-h-screen px-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 w-full justify-center items-center m-auto">
         <div className=" flex justify-around w-full">
           <h1 className="text-4xl font-bold">Lista de Turmas</h1>
@@ -134,7 +90,7 @@ export default function ListarProdutos() {
             Cadastrar turmas
           </button>
         </div>
-        <div className="overflow-x-auto w-[40rem] xl:w-[60rem] shadow-lg shadow-indigo-500/50 p-2 rounded-lg">
+        <div className="overflow-x-auto w-full shadow-lg shadow-indigo-500/50 p-2 rounded-lg">
           <table className="table table-zebra text-center">
             {/* head */}
             <thead>
@@ -162,7 +118,7 @@ export default function ListarProdutos() {
                             /* document.getElementById("my_modal_2").showModal();
                         atualizarProdBtnEditar(produto.id); */
                           }
-                          router.push(`/turmas/${data.id}`);
+                          router.push(`/turmas/${turma.codTurma}`);
                         }}
                         className="btn btn-info"
                       >
@@ -171,7 +127,7 @@ export default function ListarProdutos() {
 
                       {/* MOLDAL EDITAR FIM--------------------------- */}
                       <button
-                        onClick={() => removerProduto(produto.id)}
+                        onClick={() => removerTurma(turma.codTurma)}
                         className="btn btn-error"
                       >
                         Excluir

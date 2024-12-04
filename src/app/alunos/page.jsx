@@ -68,6 +68,10 @@ export default function ListarProdutos() {
     }
   };
 
+  const corrigirData = (dados) =>{
+    let data = new Date(dados).toLocaleDateString('pt-BR')
+    return data
+  }
 
   if (isLoading) {
     return (
@@ -80,7 +84,7 @@ export default function ListarProdutos() {
   }
 
   return (
-    <div className="flex w-full md:w-[80%] m-auto items-center justify-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex w-full max-w-screen-xl m-auto items-center justify-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 w-full justify-center items-center m-auto">
         <div className=" flex justify-around w-full">
           <h1 className="text-4xl font-bold">Lista de Alunos</h1>
@@ -93,7 +97,7 @@ export default function ListarProdutos() {
             Cadastrar Aluno
           </button>
         </div>
-        <div className="overflow-x-auto w-[40rem] xl:w-[60rem] shadow-lg shadow-indigo-500/50 p-2 rounded-lg">
+        <div className="overflow-x-auto w-full shadow-lg shadow-indigo-500/50 p-2 rounded-lg">
           <table className="table table-zebra text-center">
             {/* head */}
             <thead>
@@ -110,7 +114,7 @@ export default function ListarProdutos() {
                 <tr key={index}>
                   <th>{aluno.matricula}</th>
                   <td>{aluno.nome}</td>
-                  <td>{aluno.dataNascimento}</td>
+                  <td>{ corrigirData(aluno.dataNascimento)}</td>
                   <td>{aluno.turma.nome}</td>
                   <td>
                     <div className="flex items-center justify-center gap-5 my-2">

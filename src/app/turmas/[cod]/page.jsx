@@ -2,111 +2,186 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function EditarAluno() {
-  const [nome, setNome] = useState("");
-  const [dataNascimento, setDataNascimento] = useState("");
-  const [turma, setTurma] = useState("");
+export default function EditarTurma() {
+  const [codTurma, setCodTurma] = useState("");
+  const [nomeTurma, setNomeTurma] = useState("");
+  const [periodo, setPeriodo] = useState("");
+  const [professorResponsavel, setProfessorResponsavel] = useState("");
+  const [idProfessorResponsavel, setidProfessorResponsavel] = useState("");
+  const [progressValue, setProgressValue] = useState(0); // Barra de progresso
+  const [isLoading, setIsLoading] = useState(true); 
 
   const params = useParams();
+  const router = useRouter();
+  
+  const idTurma = params.cod; // Captura o ID da turma da URL
+
+  // Função para calcular o progresso baseado nos campos preenchidos
+  useEffect(() => {
+    if (idTurma) {
+      buscarTurmaParaAtualizar();
+    }
+  }, [idTurma]);
 
   // Lendo em tempo real os dados dos inputs e armazenando nos states
   const handleInputs = (e) => {
     const { name, value } = e.target;
     switch (name) {
-      case "nome":
-        setNome(value);
+      case "cod-turma":
+        setCodTurma(value);
         break;
-      case "data-de-nascimento":
-        setDataNascimento(value);
+      case "nome-turma":
+        setNomeTurma(value);
         break;
-      case "turma":
-        setTurma(value);
+      case "periodo":
+        setPeriodo(value);
+        break;
+      case "professor-responsavel":
+        setProfessorResponsavel(value);
         break;
       default:
         break;
     }
   };
 
-  const editarAluno = async (event) => {
+  const editarTurma = async (event) => {
     event.preventDefault();
     try {
-      if (nome && dataNascimento && turma) {
-        const data = { nome, dataNascimento, turma };
-        const resposta = await axiosInstance.post("/produtos", data);
-        console.log("Produto cadastrado com sucesso", resposta.status);
-        setNome("");
-        setDataNascimento("");
-        setTurma("");
+      if (codTurma && nomeTurma && periodo && idProfessorResponsavel) {
+        const data = {codTurma: parseInt(codTurma), nome:nomeTurma, periodo, professor: idProfessorResponsavel };
+        console.log("DADOS",data)
+        const resposta = await axiosInstance.put(`/turma/atualizar/${params.id}`, data);
+        console.log("Turma editada com sucesso", resposta.status);
+        setCodTurma("");
+        setNomeTurma("");
+        setPeriodo("");
+        setProfessorResponsavel("");
       }
+      setTimeout(() => router.push("/turmas"), 2000); // Redireciona após a atualização
     } catch (error) {
-      console.log("Erro ao cadastrar produto", error);
+      console.log("Erro ao editar turma", error);
     }
   };
 
-  const router = useRouter();
+  const buscarTurmaParaAtualizar = async () => {
+    try {
+      setProgressValue(0); // Reinicia a barra de progresso ao começar o carregamento
+      let progress = 0;
+
+      // Função que vai incrementar o valor da barra de progresso gradualmente
+      const interval = setInterval(() => {
+        progress += 5; // Aumenta a barra 5% por vez
+        setProgressValue(progress);
+
+        // Quando a barra atingir 100%, para a animação
+        if (progress >= 100) {
+          clearInterval(interval);
+        }
+      }, 60); // Executa a cada 60ms (para preencher a barra em 3 segundos)
+
+      const resposta = await axiosInstance.get(`/turma/listar/${idTurma}`);
+      const turma = resposta.data;
+      console.log(turma)
+      // Atualiza os estados com os dados da turma
+      setCodTurma(turma.codTurma);
+      setNomeTurma(turma.nome);
+      setPeriodo(turma.periodo);
+      setProfessorResponsavel(turma.professor.nome);
+      setidProfessorResponsavel(turma.fk_professor_idprofessor)
+      // Completa a animação da barra após os dados serem carregados
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
+    } catch (error) {
+      console.error("Erro ao buscar Turma", error);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex w-full items-center justify-center justify-items-center min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 w-full justify-center items-center m-auto">
         <div className="flex flex-col items-center justify-center w-full gap-4">
-          <h1 className="text-4xl font-bold">Edição de Alunos</h1>
-          <p className="text-lg">Matricula: {params.matricula}</p>
+          <h1 className="text-4xl font-bold">Edição de Turma</h1>
+          <p className="text-lg">ID da Turma: {params.cod}</p>
         </div>
 
-        <form
-          onSubmit={editarAluno}
-          className="flex flex-col justify-center gap-4 w-[25rem] shadow-lg shadow-indigo-500/50 p-6 rounded-lg"
-        >
-          <div className="flex-1">
-            <label className="my-1 block">Nome</label>
-            <input
-              type="text"
-              placeholder="Nome"
-              name="nome"
-              value={nome || ""}
-              onChange={handleInputs}
-              className="input input-bordered input-primary w-full"
-            />
+        {/* Exibe a barra de progresso enquanto os dados estão sendo carregados */}
+        {isLoading ? (
+          <div className="flex justify-center mt-4">
+            <progress
+              className="progress progress-primary w-80"
+              value={progressValue}
+              max="100"
+            ></progress>
           </div>
-          <div className="flex-1">
-            <label className="block my-1">Data de Nascimento</label>
-            <input
-              type="date"
-              placeholder="Data de Nascimento"
-              name="data-de-nascimento"
-              onChange={handleInputs}
-              value={dataNascimento || ""}
-              className="input input-bordered input-primary text-gray-400 w-full"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block my-1">Turma</label>
-            <input
-              type="text"
-              placeholder="Turma"
-              name="turma"
-              onChange={handleInputs}
-              value={turma || ""}
-              className="input input-bordered input-primary w-full"
-            />
-          </div>
-          <button
-            type="submit"
-            className="btn btn-outline btn-primary w-fit self-center"
+        ) : (
+          <form
+            onSubmit={editarTurma}
+            className="flex flex-col justify-center gap-4 w-[25rem] shadow-lg shadow-indigo-500/50 p-6 rounded-lg"
           >
-            Cadastrar
-          </button>
-          <div className="flex justify-around">
-            <Link href={"/turmas"} className="link link-hover">
-              Lista de Turmas
-            </Link>
-            <Link href={"/"} className="link link-hover">
-              Voltar ao Home
-            </Link>
-          </div>
-        </form>
+            <div className="flex-1">
+              <label className="block my-1">Código da Turma</label>
+              <input
+                type="text"
+                placeholder="Código da Turma"
+                name="cod-turma"
+                value={codTurma || ""}
+                onChange={handleInputs}
+                className="input input-bordered input-primary w-full"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block my-1">Nome da Turma</label>
+              <input
+                type="text"
+                placeholder="Nome da Turma"
+                name="nome-turma"
+                value={nomeTurma || ""}
+                onChange={handleInputs}
+                className="input input-bordered input-primary w-full"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block my-1">Período</label>
+              <input
+                type="text"
+                placeholder="Período"
+                name="periodo"
+                value={periodo || ""}
+                onChange={handleInputs}
+                className="input input-bordered input-primary w-full"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block my-1">Professor Responsável</label>
+              <input
+                type="text"
+                placeholder="Professor Responsável"
+                name="professor-responsavel"
+                value={professorResponsavel || ""}
+                onChange={handleInputs}
+                className="input input-bordered input-primary w-full"
+              />
+            </div>
+            <button
+              type="submit"
+              className="btn btn-outline btn-primary w-fit self-center"
+            >
+              Atualizar
+            </button>
+            <div className="flex justify-around">
+              <Link href={"/turmas"} className="link link-hover">
+                Lista de Turmas
+              </Link>
+              <Link href={"/"} className="link link-hover">
+                Voltar ao Home
+              </Link>
+            </div>
+          </form>
+        )}
       </main>
     </div>
   );

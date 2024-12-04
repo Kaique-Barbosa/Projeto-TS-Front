@@ -1,20 +1,35 @@
 "use client";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CadastrarAluno() {
   const [nome, setNome] = useState("");
   const [areaAtuacao, setAreaAtuacao] = useState("");
   const [telefone, setTelefone] = useState("");
-  const router = useRouter();
+  const [progressValue, setProgressValue] = useState(0); // Estado para controlar a barra de progresso
+  const [isLoading, setIsLoading] = useState(true); // Estado para controlar o carregamento dos dados
   const params = useParams()
+  const router = useRouter();
+
+  const idProfessor = params.id; // Captura o valor de "matricula" da URL
+
+  // Função para calcular o progresso baseado nos campos preenchidos
+  useEffect(() => {
+    
+    if (idProfessor) {
+      buscarProfessorParaAtualizar();
+    }
+    // return () => {
+    //   second
+    // }
+  }, [idProfessor])
+  
 
   // Lendo em tempo real os dados dos inputs e armazenando nos states
   const handleInputs = (e) => {
     const { name, value } = e.target;
-
     switch (name) {
       case "nome":
         setNome(value);
@@ -30,36 +45,78 @@ export default function CadastrarAluno() {
     }
   };
 
-  const cadastrarAluno = async (event) => {
+  const atualizarProfessor = async (event) => {
     event.preventDefault();
     try {
-      if (nome && dataNascimento && turma) {
-        const data = { nome, dataNascimento, turma };
-        const resposta = await axiosInstance.post(
-          "/aluno/cadastrarprodutos",
-          data
-        );
-        console.log("Produto cadastrado com sucesso", resposta.status);
+      if (nome && areaAtuacao && telefone) {
+        const data = { nome, areaAtuacao, telefone };
+        const resposta = await axiosInstance.put(`/professor/${params.id}`, data);
+        console.log("Professor cadastrado com sucesso", resposta.status);
         setNome("");
-        setDataNascimento("");
-        setTurma("");
+        setAreaAtuacao("");
+        setTelefone("");
       }
-      setTimeout(() => router.push("/alunos"), 2000);
+      setTimeout(() => router.push("/professores"), 2000);
     } catch (error) {
-      console.log("Erro ao cadastrar produto", error);
+      console.log("Erro ao cadastrar professor", error);
+    }
+  };
+
+  const buscarProfessorParaAtualizar = async () => {
+    try {
+      setProgressValue(0); // Reinicia a barra de progresso ao começar o carregamento
+      let progress = 0;
+
+      // Função que vai incrementar o valor da barra de progresso gradualmente
+      const interval = setInterval(() => {
+        progress += 5; // Aumenta a barra 5% por vez
+        setProgressValue(progress);
+
+        // Quando a barra atingir 100%, para a animação
+        if (progress >= 100) {
+          clearInterval(interval);
+        }
+      }, 60); // Executa a cada 60ms (para preencher a barra em 3 segundos)
+
+      const resposta = await axiosInstance.get(`professor/listar/${idProfessor}`);
+      const professor = resposta.data;
+
+      // Atualiza os estados com os dados do aluno
+      setNome(professor.nome);
+      setAreaAtuacao(professor.areaAtuacao);
+      setTelefone(professor.telefone);
+      // Completa a animação da barra após os dados serem carregados
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
+    } catch (error) {
+      console.error("Erro ao buscar Professor", error);
+      setIsLoading(false);
     }
   };
 
   return (
+    
     <div className="flex w-full items-center justify-center justify-items-center min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 w-full justify-center items-center m-auto">
         <div className="flex flex-col items-center justify-center w-full gap-4">
-          <h1 className="text-4xl font-bold">Edição de professores</h1>
-          <p className="text-lg">Matricula: {params.matricula}</p>
+          <h1 className="text-4xl font-bold">Cadastro de Professores</h1>
+          <p className="text-lg">Id do professor: {params.id}</p>
         </div>
 
+        {/* Exibe a barra de progresso enquanto o formulário está sendo preenchido */}
+     {isLoading ? (
+      
+              <div className="flex justify-center mt-4">
+              <progress
+                className="progress progress-primary w-80"
+                value={progressValue}
+                max="100"
+              ></progress>
+            </div>
+     ) : (
         <form
-          onSubmit={cadastrarAluno}
+          onSubmit={atualizarProfessor}
           className="flex flex-col justify-center gap-4 w-[25rem] shadow-lg shadow-indigo-500/50 p-6 rounded-lg"
         >
           <div className="flex-1">
@@ -74,7 +131,7 @@ export default function CadastrarAluno() {
             />
           </div>
           <div className="flex-1">
-            <label className="block my-1">Area de atuação</label>
+            <label className="block my-1">Área de Atuação</label>
             <input
               type="text"
               placeholder="Digite sua área"
@@ -103,13 +160,16 @@ export default function CadastrarAluno() {
           </button>
           <div className="flex justify-around">
             <Link href={"/professores"} className="hover:underline">
-              Lista de professores
+              Lista de Professores
             </Link>
             <Link href={"/"} className="hover:underline">
               Voltar ao Home
             </Link>
           </div>
         </form>
+     )}
+   
+
       </main>
     </div>
   );

@@ -56,57 +56,34 @@ export default function ListarProdutos() {
     setTimeout(() => setIsLoading(false), 500);
   }, []);
 
-  const removerProduto = async (id) => {
-    console.log("teste");
+  const removerProfessor = async (id) => {
     try {
-      const resposta = await axiosInstance.delete(`/produtos/${id}`);
-      console.log("produto deletado com sucesso", resposta);
+      const resposta = await axiosInstance.delete(`/professor/${id}`);
+      alert("Professor deletado com sucesso");
       fetchData();
       setTimeout(() => setIsLoading(false), 500);
     } catch (error) {
       if (error.response) {
         // A resposta do servidor foi recebida, mas contém erro (status code diferente de 2xx)
         console.error("Erro de resposta:", error.response.status);
+        alert("Erro de resposta:");
       } else if (error.request) {
         // A requisição foi feita, mas nenhuma resposta foi recebida
         console.error("Erro de requisição:", error.request);
+        alert("Erro de requisição");
       } else {
         // Outro tipo de erro ocorreu
         console.error("Erro ao configurar requisição:", error.message);
+        alert("Erro ao configurar requisição");
       }
     }
   };
 
-  const atualizarProduto = async (id, nome, quantidade, preco) => {
-    try {
-      const data = {
-        nome,
-        quantidade: parseInt(quantidade, 10),
-        preco: parseFloat(preco), //
-      };
-      if (isNaN(data.quantidade) || isNaN(data.preco)) {
-        console.error("Quantidade ou preço não são valores numéricos válidos.");
-        return;
-      }
 
-      const resposta = await axiosInstance.put(`/produtos/${id}`, data);
 
-      // Mostrar o alerta de sucesso
-      setMostrarAlertaSucesso(true);
-      setTimeout(() => setMostrarAlertaSucesso(false), 3000); // Esconder o alerta após 3 segundos
-
-      fetchData();
-      setTimeout(() => setIsLoading(false), 500);
-    } catch (error) {
-      if (error.response) {
-        console.error("Erro de resposta:", error.response.status);
-      } else if (error.request) {
-        console.error("Erro de requisição:", error.request);
-      } else {
-        console.error("Erro ao configurar requisição:", error.message);
-      }
-    }
-  };
+  const formatarNumeroTelefone = (numeros) =>{
+    return numeros.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3");
+  }
 
   if (isLoading) {
     return (
@@ -119,7 +96,7 @@ export default function ListarProdutos() {
   }
 
   return (
-    <div className="flex w-full md:w-[80%] m-auto items-center justify-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex w-full max-w-screen-xl m-auto items-center justify-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 w-full justify-center items-center m-auto">
         <div className=" flex justify-around w-full">
           <h1 className="text-4xl font-bold">Lista de Professores</h1>
@@ -132,7 +109,7 @@ export default function ListarProdutos() {
             Cadastrar Professor
           </button>
         </div>
-        <div className="overflow-x-auto w-[40rem] xl:w-[60rem] shadow-lg shadow-indigo-500/50 p-2 rounded-lg">
+        <div className="overflow-x-auto w-full shadow-lg shadow-indigo-500/50 p-2 rounded-lg">
           <table className="table table-zebra text-center">
             {/* head */}
             <thead>
@@ -150,7 +127,7 @@ export default function ListarProdutos() {
                   <th>{professor.idprofessor}</th>
                   <td>{professor.nome}</td>
                   <td>{professor.areaAtuacao}</td>
-                  <td>{professor.telefone}</td>
+                  <td>{formatarNumeroTelefone(professor.telefone)}</td>
                   <td>
                     <div className="flex items-center justify-center gap-5 my-2">
                       {/* MOLDAL EDITAR INICIO--------------------------- */}
@@ -160,7 +137,7 @@ export default function ListarProdutos() {
                             /* document.getElementById("my_modal_2").showModal();
                         atualizarProdBtnEditar(produto.id); */
                           }
-                          router.push(`/professores/${data.id}`);
+                          router.push(`/professores/${professor.idprofessor}`);
                         }}
                         className="btn btn-info"
                       >
@@ -169,7 +146,7 @@ export default function ListarProdutos() {
 
                       {/* MOLDAL EDITAR FIM--------------------------- */}
                       <button
-                        onClick={() => removerProduto(produto.id)}
+                        onClick={() => removerProfessor(professor.idprofessor)}
                         className="btn btn-error"
                       >
                         Excluir

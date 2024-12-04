@@ -109,7 +109,7 @@ export default function EditarAluno() {
         {isLoading ? (
           <div className="flex justify-center mt-4">
             <progress
-              className="progress progress-primary  w-56"
+              className="progress progress-primary  w-80"
               value={progressValue}
               max="100"
             ></progress>
@@ -128,7 +128,7 @@ export default function EditarAluno() {
                 name="nome"
                 value={nome}
                 onChange={handleInputs}
-                className="input input-bordered input-primary w-full dark:text-white"
+                className="input input-bordered input-primary w-full !text-black dark:text-white"
               />
             </div>
             <div className="flex-1">
@@ -139,7 +139,7 @@ export default function EditarAluno() {
                 name="data-de-nascimento"
                 value={dataNascimento}
                 onChange={handleInputs}
-                className="input input-bordered input-primary text-gray-400 w-full dark:text-white"
+                className="input input-bordered input-primary !text-gray-400 w-full dark:text-white"
               />
             </div>
             <div className="flex-1">
@@ -150,7 +150,7 @@ export default function EditarAluno() {
                 name="turma"
                 value={turma}
                 onChange={handleInputs}
-                className="input input-bordered input-primary w-full dark:text-white"
+                className="input input-bordered input-primary w-full !text-black dark:text-white"
               />
             </div>
             <button

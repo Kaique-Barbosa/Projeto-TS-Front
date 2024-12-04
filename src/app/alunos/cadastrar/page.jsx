@@ -8,6 +8,7 @@ export default function CadastrarAluno() {
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [turma, setTurma] = useState("");
+  const [erros, setErros] = useState("");
   const router = useRouter();
   
   // Lendo em tempo real os dados dos inputs e armazenando nos states
@@ -45,8 +46,8 @@ export default function CadastrarAluno() {
         // Enviando a requisição para o backend
         const resposta = await axiosInstance.post(`/aluno/cadastrar`, data);
         console.log("Aluno cadastrado com sucesso", resposta.status);
-        router.push("/alunos"); // Redireciona para a lista de alunos após o cadastro
       }
+      router.push("/alunos"); // Redireciona para a lista de alunos após o cadastro
     } catch (error) {
       console.error("Erro ao cadastrar aluno", error);
     }
@@ -74,7 +75,7 @@ export default function CadastrarAluno() {
               name="nome"
               value={nome || ""}
               onChange={handleInputs}
-              className="input input-bordered input-primary w-full dark:text-white"
+              className="input input-bordered input-primary w-full !text-black dark:text-white"
             />
           </div>
           <div className="flex-1">
@@ -85,7 +86,7 @@ export default function CadastrarAluno() {
               name="data-de-nascimento"
               onChange={handleInputs}
               value={dataNascimento || ""}
-              className="input input-bordered input-primary text-gray-600 w-full dark:text-gray-400"
+              className="input input-bordered input-primary !text-gray-600 w-full dark:text-gray-400"
             />
           </div>
           <div className="flex-1">
@@ -96,7 +97,7 @@ export default function CadastrarAluno() {
               name="turma"
               onChange={handleInputs}
               value={turma || ""}
-              className="input input-bordered input-primary w-full dark:text-white"
+              className="input input-bordered input-primary w-full !text-black  dark:text-white"
             />
           </div>
           <button
