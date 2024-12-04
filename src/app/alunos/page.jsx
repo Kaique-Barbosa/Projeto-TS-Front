@@ -40,32 +40,18 @@ export default function ListarProdutos() {
     }
   };
 
-  // const atualizarBtnEditar = (id) => {
-  //   if (id) {
-  //     data.map((turma) => {
-  //       if (turma.id == id) {
-  //         setMatricula(turma.nome);
-  //         setNome(turma.matricula);
-  //         setDataNascimento(turma.dataNascimento);
-  //         setCodTurma(turma.turma);
-   
-  //       } else {
-  //         return console.log("erro ao buscar por id");
-  //       }
-  //     });
-  //   }
-  // };
 
   useEffect(() => {
     fetchData();
     setTimeout(() => setIsLoading(false), 500);
   }, []);
 
-  const removerProduto = async (id) => {
+  const removerAluno = async (matricula) => {
     console.log("teste");
+    setIsLoading(true)
     try {
-      const resposta = await axiosInstance.delete(`/produtos/${id}`);
-      console.log("produto deletado com sucesso", resposta);
+      const resposta = await axiosInstance.delete(`/aluno/${matricula}`);
+      console.log("Aluno deletado com sucesso");
       fetchData();
       setTimeout(() => setIsLoading(false), 500);
     } catch (error) {
@@ -82,36 +68,6 @@ export default function ListarProdutos() {
     }
   };
 
-  const atualizarProduto = async (id, nome, quantidade, preco) => {
-    try {
-      const data = {
-        nome,
-        quantidade: parseInt(quantidade, 10),
-        preco: parseFloat(preco), //
-      };
-      if (isNaN(data.quantidade) || isNaN(data.preco)) {
-        console.error("Quantidade ou preço não são valores numéricos válidos.");
-        return;
-      }
-
-      const resposta = await axiosInstance.put(`/produtos/${id}`, data);
-
-      // Mostrar o alerta de sucesso
-      setMostrarAlertaSucesso(true);
-      setTimeout(() => setMostrarAlertaSucesso(false), 3000); // Esconder o alerta após 3 segundos
-
-      fetchData();
-      setTimeout(() => setIsLoading(false), 500);
-    } catch (error) {
-      if (error.response) {
-        console.error("Erro de resposta:", error.response.status);
-      } else if (error.request) {
-        console.error("Erro de requisição:", error.request);
-      } else {
-        console.error("Erro ao configurar requisição:", error.message);
-      }
-    }
-  };
 
   if (isLoading) {
     return (
@@ -150,12 +106,12 @@ export default function ListarProdutos() {
             </thead>
             <tbody>
               {/* row  */}
-              {data.map((turma, index) => (
+              {data.map((aluno, index) => (
                 <tr key={index}>
-                  <th>{turma.matricula}</th>
-                  <td>{turma.nome}</td>
-                  <td>{turma.dataNascimento}</td>
-                  <td>{turma.turma}</td>
+                  <th>{aluno.matricula}</th>
+                  <td>{aluno.nome}</td>
+                  <td>{aluno.dataNascimento}</td>
+                  <td>{aluno.turma.nome}</td>
                   <td>
                     <div className="flex items-center justify-center gap-5 my-2">
 
@@ -165,7 +121,11 @@ export default function ListarProdutos() {
                             /* document.getElementById("my_modal_2").showModal();
                         atualizarProdBtnEditar(produto.id); */
                           }
-                          router.push(`/alunos/${data.id}`);
+                          const dataFormatada = new Date(aluno.dataNascimento).toISOString().split("T")[0]; // Formata para YYYY-MM-DD
+
+                          router.push(
+                            `/alunos/editar?matricula=${aluno.matricula}`
+                          );
                         }}
                         className="btn btn-info"
                       >
@@ -173,7 +133,7 @@ export default function ListarProdutos() {
                       </button>
  
                       <button
-                        onClick={() => removerProduto(produto.id)}
+                        onClick={() => removerAluno(aluno.matricula)}
                         className="btn btn-error"
                       >
                         Excluir

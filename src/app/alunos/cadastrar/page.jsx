@@ -33,18 +33,26 @@ export default function CadastrarAluno() {
     event.preventDefault();
     try {
       if (nome && dataNascimento && turma) {
-        const data = { nome, dataNascimento, turma };
-        const resposta = await axiosInstance.post("/aluno/cadastrarprodutos", data);
-        console.log("Produto cadastrado com sucesso", resposta.status);
-        setNome("");
-        setDataNascimento("");
-        setTurma("");
+        // Convertendo a data para o formato yyyy-MM-ddT00:00:00Z
+        const dataFormatada = new Date(`${dataNascimento}T00:00:00Z`); 
+        
+        
+  
+        const data = { nome, dataNascimento: dataFormatada, turma }; 
+  
+        console.log(nome, {dataNascimento: dataFormatada}, turma);
+  
+        // Enviando a requisição para o backend
+        const resposta = await axiosInstance.post(`/aluno/cadastrar`, data);
+        console.log("Aluno cadastrado com sucesso", resposta.status);
+        router.push("/alunos"); // Redireciona para a lista de alunos após o cadastro
       }
-      setTimeout(()=> router.push('/alunos'), 2000)
     } catch (error) {
-      console.log("Erro ao cadastrar produto", error);
+      console.error("Erro ao cadastrar aluno", error);
     }
   };
+  
+  
 
 
   return (
@@ -66,7 +74,7 @@ export default function CadastrarAluno() {
               name="nome"
               value={nome || ""}
               onChange={handleInputs}
-              className="input input-bordered input-primary w-full"
+              className="input input-bordered input-primary w-full dark:text-white"
             />
           </div>
           <div className="flex-1">
@@ -77,18 +85,18 @@ export default function CadastrarAluno() {
               name="data-de-nascimento"
               onChange={handleInputs}
               value={dataNascimento || ""}
-              className="input input-bordered input-primary text-gray-600 w-full"
+              className="input input-bordered input-primary text-gray-600 w-full dark:text-gray-400"
             />
           </div>
           <div className="flex-1">
             <label className="block my-1">Turma</label>
             <input
-              type="text"
+              type="number"
               placeholder="Turma"
               name="turma"
               onChange={handleInputs}
               value={turma || ""}
-              className="input input-bordered input-primary w-full"
+              className="input input-bordered input-primary w-full dark:text-white"
             />
           </div>
           <button
