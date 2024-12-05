@@ -8,20 +8,21 @@ export default function EditarTurma() {
   const [codTurma, setCodTurma] = useState("");
   const [nomeTurma, setNomeTurma] = useState("");
   const [periodo, setPeriodo] = useState("");
-  const [professorResponsavel, setProfessorResponsavel] = useState("");
+  const [professores, setProfessores] = useState([]);
   const [idProfessorResponsavel, setidProfessorResponsavel] = useState("");
   const [progressValue, setProgressValue] = useState(0); // Barra de progresso
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
 
   const params = useParams();
   const router = useRouter();
-  
+
   const idTurma = params.cod; // Captura o ID da turma da URL
 
   // Função para calcular o progresso baseado nos campos preenchidos
   useEffect(() => {
     if (idTurma) {
       buscarTurmaParaAtualizar();
+      buscarProfessores();
     }
   }, [idTurma]);
 
@@ -39,7 +40,7 @@ export default function EditarTurma() {
         setPeriodo(value);
         break;
       case "professor-responsavel":
-        setProfessorResponsavel(value);
+        setidProfessorResponsavel(value);
         break;
       default:
         break;
@@ -50,14 +51,22 @@ export default function EditarTurma() {
     event.preventDefault();
     try {
       if (codTurma && nomeTurma && periodo && idProfessorResponsavel) {
-        const data = {codTurma: parseInt(codTurma), nome:nomeTurma, periodo, professor: idProfessorResponsavel };
-     
-        const resposta = await axiosInstance.put(`/turma/atualizar/${params.cod}`, data);
+        const data = {
+          codTurma: parseInt(codTurma),
+          nome: nomeTurma,
+          periodo,
+          professor: idProfessorResponsavel,
+        };
+
+        const resposta = await axiosInstance.put(
+          `/turma/atualizar/${params.cod}`,
+          data
+        );
         console.log("Turma editada com sucesso", resposta.status);
         setCodTurma("");
         setNomeTurma("");
         setPeriodo("");
-        setProfessorResponsavel("");
+        setidProfessorResponsavel("");
       }
       setTimeout(() => router.push("/turmas"), 500); // Redireciona após a atualização
     } catch (error) {
@@ -83,13 +92,12 @@ export default function EditarTurma() {
 
       const resposta = await axiosInstance.get(`/turma/listar/${idTurma}`);
       const turma = resposta.data;
-      console.log(turma)
+      console.log(turma);
       // Atualiza os estados com os dados da turma
       setCodTurma(turma.codTurma);
       setNomeTurma(turma.nome);
       setPeriodo(turma.periodo);
-      setProfessorResponsavel(turma.professor.nome);
-      setidProfessorResponsavel(turma.fk_professor_idprofessor)
+      setidProfessorResponsavel(turma.fk_professor_idprofessor);
       // Completa a animação da barra após os dados serem carregados
       setTimeout(() => {
         setIsLoading(false);
@@ -97,6 +105,21 @@ export default function EditarTurma() {
     } catch (error) {
       console.error("Erro ao buscar Turma", error);
       setIsLoading(false);
+    }
+  };
+
+  const buscarProfessores = async () => {
+    try {
+      const resposta = await axiosInstance.get("/professor/listar");
+      const professores = resposta.data;
+      setProfessores(
+        professores.map((professor) => ({
+          id: professor.idprofessor,
+          nome: professor.nome,
+        }))
+      );
+    } catch (error) {
+      console.error("Erro ao buscar Professores", error);
     }
   };
 
@@ -130,7 +153,7 @@ export default function EditarTurma() {
                 name="cod-turma"
                 value={codTurma || ""}
                 onChange={handleInputs}
-                className="input input-bordered input-primary w-full"
+                className="input input-bordered input-primary w-full text-gray-600"
               />
             </div>
             <div className="flex-1">
@@ -141,7 +164,7 @@ export default function EditarTurma() {
                 name="nome-turma"
                 value={nomeTurma || ""}
                 onChange={handleInputs}
-                className="input input-bordered input-primary w-full"
+                className="input input-bordered input-primary w-full text-gray-600"
               />
             </div>
             <div className="flex-1">
@@ -152,19 +175,23 @@ export default function EditarTurma() {
                 name="periodo"
                 value={periodo || ""}
                 onChange={handleInputs}
-                className="input input-bordered input-primary w-full"
+                className="input input-bordered input-primary w-full text-gray-600"
               />
             </div>
             <div className="flex-1">
               <label className="block my-1">Professor Responsável</label>
-              <input
-                type="text"
-                placeholder="Professor Responsável"
+              <select
                 name="professor-responsavel"
-                value={professorResponsavel || ""}
+                value={idProfessorResponsavel}
                 onChange={handleInputs}
-                className="input input-bordered input-primary w-full"
-              />
+                className="select select-bordered select-primary w-full"
+              >
+                {professores.map((professor) => (
+                  <option key={professor.id} value={professor.id}>
+                    {professor.nome}
+                  </option>
+                ))}
+              </select>
             </div>
             <button
               type="submit"

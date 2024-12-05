@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -14,6 +14,7 @@ export default function EditarAluno() {
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [turma, setTurma] = useState("");
+  const [turmas, setTurmas] = useState({});
   const [codTurma, setCodTurma] = useState("");
   const [progressValue, setProgressValue] = useState(0); // Estado para controlar a barra de progresso
   const [isLoading, setIsLoading] = useState(true); // Estado para controlar o carregamento dos dados
@@ -22,6 +23,7 @@ export default function EditarAluno() {
   useEffect(() => {
     if (matricula) {
       buscarAlunoParaAtualizar();
+      buscarValoresDeTurmas();
     }
   }, [matricula]);
 
@@ -62,7 +64,9 @@ export default function EditarAluno() {
       const aluno = resposta.data;
 
       // Converte a data para o formato yyyy-MM-dd
-      const dataFormatada = new Date(aluno.dataNascimento).toISOString().split("T")[0];
+      const dataFormatada = new Date(aluno.dataNascimento)
+        .toISOString()
+        .split("T")[0];
       console.log(aluno.turma.codTurma);
 
       // Atualiza os estados com os dados do aluno
@@ -86,14 +90,39 @@ export default function EditarAluno() {
     try {
       if (nome && dataNascimento && codTurma) {
         const dataFormatada = new Date(`${dataNascimento}T00:00:00Z`);
-        
-        const data = { nome, dataNascimento: dataFormatada, fk_turma_codTurma : codTurma };
-        const resposta = await axiosInstance.put(`/aluno/atualizar/${matricula}`, data);
+
+        const data = {
+          nome,
+          dataNascimento: dataFormatada,
+          fk_turma_codTurma: codTurma,
+        };
+        const resposta = await axiosInstance.put(
+          `/aluno/atualizar/${matricula}`,
+          data
+        );
         console.log("Aluno atualizado com sucesso", resposta.status);
         router.push("/alunos"); // Redireciona para a lista de alunos após a edição
       }
     } catch (error) {
       console.error("Erro ao atualizar aluno", error);
+    }
+  };
+
+  const buscarValoresDeTurmas = async () => {
+    try {
+      const resposta = await axiosInstance.get("/turma/listar");
+
+      const data = resposta.data;
+
+      const turmas = data.map((turma) => {
+        return {
+          codTurma: turma.codTurma,
+          nome: turma.nome,
+        };
+      });
+      setTurmas(turmas);
+    } catch (error) {
+      console.error("Erro ao buscar turmas", error);
     }
   };
 
@@ -144,14 +173,18 @@ export default function EditarAluno() {
             </div>
             <div className="flex-1">
               <label className="block my-1">Turma</label>
-              <input
-                type="text"
-                placeholder="Turma"
+              <select
                 name="turma"
                 value={turma}
                 onChange={handleInputs}
-                className="input input-bordered input-primary w-full !text-black dark:text-white"
-              />
+                className="select select-bordered select-primary w-full"
+              >
+                {turmas.map((turma, index) => (
+                  <option key={index} value={turma.codTurma}>
+                    {turma.nome}
+                  </option>
+                ))}
+              </select>
             </div>
             <button
               type="submit"
