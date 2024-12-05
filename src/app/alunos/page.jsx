@@ -5,22 +5,12 @@ import axiosInstance from "@/utils/axiosInstance";
 import { useEffect, useState } from "react";
 import AlertSucesso from "../components/AlertSucesso";
 
-export default function ListarProdutos() {
+export default function listarAlunos() {
   const router = useRouter();
   const [data, setData] = useState([{}]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // estados para carregar os valores do botão atualiza
-  // armazenam somente o dado de 1 produto buscado pela funcao atualizarProdBtnEditar()
-  const [matricula, setMatricula] = useState("");
-  const [nome, setNome] = useState("");
-  const [dataNascimento, setDataNascimento] = useState("");
-  const [codTurma, setCodTurma] = useState("");
 
-
-
-  // estados para alertas
-  const [mostrarAlertaSucesso, setMostrarAlertaSucesso] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -68,10 +58,14 @@ export default function ListarProdutos() {
     }
   };
 
-  const corrigirData = (dados) =>{
-    let data = new Date(dados).toLocaleDateString('pt-BR')
-    return data
-  }
+  const corrigirData = (dados) => {
+    const inverterData = (dados) => dados.split("-").reverse().join("/");
+
+    const data = new Date(dados).toISOString().split("T")[0];
+    const dataFormatada = inverterData(data);
+    return dataFormatada; // Retorna a data no formato dd/mm/yyyy
+  };
+  
 
   if (isLoading) {
     return (
@@ -114,17 +108,13 @@ export default function ListarProdutos() {
                 <tr key={index}>
                   <th>{aluno.matricula}</th>
                   <td>{aluno.nome}</td>
-                  <td>{ corrigirData(aluno.dataNascimento)}</td>
+                  <td>{corrigirData(aluno.dataNascimento)}</td>
                   <td>{aluno.turma.nome}</td>
                   <td>
                     <div className="flex items-center justify-center gap-5 my-2">
 
                       <button
                         onClick={() => {
-                          {
-                            /* document.getElementById("my_modal_2").showModal();
-                        atualizarProdBtnEditar(produto.id); */
-                          }
                           const dataFormatada = new Date(aluno.dataNascimento).toISOString().split("T")[0]; // Formata para YYYY-MM-DD
 
                           router.push(

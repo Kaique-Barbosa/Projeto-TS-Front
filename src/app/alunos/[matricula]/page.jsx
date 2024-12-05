@@ -87,7 +87,7 @@ export default function EditarAluno() {
       if (nome && dataNascimento && codTurma) {
         const dataFormatada = new Date(`${dataNascimento}T00:00:00Z`);
         
-        const data = { nome, dataFormatada, fk_turma_codTurma : codTurma };
+        const data = { nome, dataNascimento: dataFormatada, fk_turma_codTurma : codTurma };
         const resposta = await axiosInstance.put(`/aluno/atualizar/${matricula}`, data);
         console.log("Aluno atualizado com sucesso", resposta.status);
         router.push("/alunos"); // Redireciona para a lista de alunos após a edição

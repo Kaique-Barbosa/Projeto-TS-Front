@@ -56,7 +56,7 @@ export default function CadastrarAluno() {
         setAreaAtuacao("");
         setTelefone("");
       }
-      setTimeout(() => router.push("/professores"), 2000);
+      setTimeout(() => router.push("/professores"), 500);
     } catch (error) {
       console.log("Erro ao cadastrar professor", error);
     }

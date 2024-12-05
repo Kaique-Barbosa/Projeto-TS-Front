@@ -51,15 +51,15 @@ export default function EditarTurma() {
     try {
       if (codTurma && nomeTurma && periodo && idProfessorResponsavel) {
         const data = {codTurma: parseInt(codTurma), nome:nomeTurma, periodo, professor: idProfessorResponsavel };
-        console.log("DADOS",data)
-        const resposta = await axiosInstance.put(`/turma/atualizar/${params.id}`, data);
+     
+        const resposta = await axiosInstance.put(`/turma/atualizar/${params.cod}`, data);
         console.log("Turma editada com sucesso", resposta.status);
         setCodTurma("");
         setNomeTurma("");
         setPeriodo("");
         setProfessorResponsavel("");
       }
-      setTimeout(() => router.push("/turmas"), 2000); // Redireciona após a atualização
+      setTimeout(() => router.push("/turmas"), 500); // Redireciona após a atualização
     } catch (error) {
       console.log("Erro ao editar turma", error);
     }
