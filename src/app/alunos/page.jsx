@@ -10,8 +10,6 @@ export default function listarAlunos() {
   const [data, setData] = useState([{}]);
   const [isLoading, setIsLoading] = useState(true);
 
-
-
   const fetchData = async () => {
     try {
       const resposta = await axiosInstance.get("/aluno/listar");
@@ -30,7 +28,6 @@ export default function listarAlunos() {
     }
   };
 
-
   useEffect(() => {
     fetchData();
     setTimeout(() => setIsLoading(false), 500);
@@ -38,7 +35,7 @@ export default function listarAlunos() {
 
   const removerAluno = async (matricula) => {
     console.log("teste");
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const resposta = await axiosInstance.delete(`/aluno/${matricula}`);
       console.log("Aluno deletado com sucesso");
@@ -58,14 +55,9 @@ export default function listarAlunos() {
     }
   };
 
-  const corrigirData = (dados) => {
-    const inverterData = (dados) => dados.split("-").reverse().join("/");
-
-    const data = new Date(dados).toISOString().split("T")[0];
-    const dataFormatada = inverterData(data);
-    return dataFormatada; // Retorna a data no formato dd/mm/yyyy
+  const corrigirData = (data) => {
+    return new Date(data).toLocaleDateString("pt-BR");
   };
-  
 
   if (isLoading) {
     return (
@@ -112,10 +104,11 @@ export default function listarAlunos() {
                   <td>{aluno.turma.nome}</td>
                   <td>
                     <div className="flex items-center justify-center gap-5 my-2">
-
                       <button
                         onClick={() => {
-                          const dataFormatada = new Date(aluno.dataNascimento).toISOString().split("T")[0]; // Formata para YYYY-MM-DD
+                          const dataFormatada = new Date(aluno.dataNascimento)
+                            .toISOString()
+                            .split("T")[0]; // Formata para YYYY-MM-DD
 
                           router.push(
                             `/alunos/editar?matricula=${aluno.matricula}`
@@ -125,7 +118,7 @@ export default function listarAlunos() {
                       >
                         Editar
                       </button>
- 
+
                       <button
                         onClick={() => removerAluno(aluno.matricula)}
                         className="btn btn-error"

@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
@@ -9,11 +10,6 @@ export default function ListarProdutos() {
   const router = useRouter();
   const [data, setData] = useState([{}]);
   const [isLoading, setIsLoading] = useState(true);
-
-  
-  const [nome, setNome] = useState("");
-  const [areaAtuacao, setAreaAtuacao] = useState("");
-  const [telefone, setTelefone] = useState("");
 
   // estados para alertas
   const [mostrarAlertaSucesso, setMostrarAlertaSucesso] = useState(false);
@@ -79,11 +75,9 @@ export default function ListarProdutos() {
     }
   };
 
-
-
-  const formatarNumeroTelefone = (numeros) =>{
-    return numeros.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3");
-  }
+  const formatarNumeroTelefone = (numero) => {
+    return numero.replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3");
+  };
 
   if (isLoading) {
     return (

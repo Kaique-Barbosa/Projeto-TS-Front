@@ -10,7 +10,7 @@ export default function CadastrarAluno() {
   const [turma, setTurma] = useState("");
   const [erros, setErros] = useState("");
   const router = useRouter();
-  
+
   // Lendo em tempo real os dados dos inputs e armazenando nos states
   const handleInputs = (e) => {
     const { name, value } = e.target;
@@ -34,15 +34,12 @@ export default function CadastrarAluno() {
     event.preventDefault();
     try {
       if (nome && dataNascimento && turma) {
-        // Convertendo a data para o formato yyyy-MM-ddT00:00:00Z
-        const dataFormatada = new Date(`${dataNascimento}T00:00:00Z`); 
-        
-        
-  
-        const data = { nome, dataNascimento: dataFormatada, turma }; 
-  
-        console.log(nome, {dataNascimento: dataFormatada}, turma);
-  
+        const dataFormatada = new Date(dataNascimento).toISOString();
+
+        const data = { nome, dataNascimento: dataFormatada, turma };
+
+        console.log(nome, { dataNascimento: dataFormatada }, turma);
+
         // Enviando a requisição para o backend
         const resposta = await axiosInstance.post(`/aluno/cadastrar`, data);
         console.log("Aluno cadastrado com sucesso", resposta.status);
@@ -52,9 +49,6 @@ export default function CadastrarAluno() {
       console.error("Erro ao cadastrar aluno", error);
     }
   };
-  
-  
-
 
   return (
     <div className="flex w-full items-center justify-center justify-items-center min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">

@@ -80,6 +80,7 @@ export default function CadastrarAluno() {
 
       const resposta = await axiosInstance.get(`professor/listar/${idProfessor}`);
       const professor = resposta.data;
+      console.log("Professor encontrado", professor);
 
       // Atualiza os estados com os dados do aluno
       setNome(professor.nome);
@@ -127,7 +128,7 @@ export default function CadastrarAluno() {
               name="nome"
               value={nome || ""}
               onChange={handleInputs}
-              className="input input-bordered input-primary w-full"
+              className="input input-bordered input-primary w-full text-gray-600"
             />
           </div>
           <div className="flex-1">
@@ -149,7 +150,7 @@ export default function CadastrarAluno() {
               name="telefone"
               onChange={handleInputs}
               value={telefone || ""}
-              className="input input-bordered input-primary w-full"
+              className="input input-bordered input-primary w-full text-gray-600"
             />
           </div>
           <button
